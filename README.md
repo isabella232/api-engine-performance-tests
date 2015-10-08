@@ -30,7 +30,7 @@ Required firewall openings:
 
 ## Sources
 
-* Boom is pre-built with a couple of patches to get support for keep-alive and custom host header. The sources are available at https://github.com/espebra/boom/.
+* [Boom](https://github.com/rakyll/boom) is pre-built with a couple of patches to get support for keep-alive and custom host header. The sources are available at https://github.com/espebra/boom/.
 * Dummy-api is pre-built. The sources are available at https://github.com/espebra/dummy-api/.
 
 ## Considerations
