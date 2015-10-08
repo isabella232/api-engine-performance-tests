@@ -26,7 +26,7 @@ Required firewall openings:
 3. Ensure firewall openings are in place (see Requirements).
 4. Add the IP addresses of the instances to the Ansible ``inventory`` file.
 5. Deploy the configuration using ``run-ansible``.
-6. The test scripts are available in ``/usr/local/bin/`` on the consumer instances.
+6. Run the test scripts which are available in ``/usr/local/bin/`` on the consumer instances. They might need to be modified to match your IP addresses.
 
 ## Sources
 
