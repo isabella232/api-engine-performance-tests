@@ -21,12 +21,12 @@ Required firewall openings:
 
 ## Setup
 
-#. Prepare 12 instances running CentOS 7.
-#. Add the required repositories manually (see Requirements).
-#. Ensure firewall openings are in place (see Requirements).
-#. Add the IP addresses of the instances to the Ansible ``inventory`` file.
-#. Deploy the configuration using ``run-ansible``.
-#. The test scripts are available in ``/usr/local/bin/`` on the consumer instances.
+1. Prepare 12 instances running CentOS 7.
+2. Add the required repositories manually (see Requirements).
+3. Ensure firewall openings are in place (see Requirements).
+4. Add the IP addresses of the instances to the Ansible ``inventory`` file.
+5. Deploy the configuration using ``run-ansible``.
+6. The test scripts are available in ``/usr/local/bin/`` on the consumer instances.
 
 ## Considerations
 
