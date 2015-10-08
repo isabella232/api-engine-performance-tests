@@ -1,0 +1,16 @@
+- name: "API Engine accounting"
+  hosts: "accounting"
+  tasks:
+    - name: "Install components"
+      yum: name="{{ item }}" state="installed"
+      with_items:
+        - "memcached"
+
+    - name: "Ensure services are running"
+      service: name="{{ item }}" state="running"
+      with_items:
+        - "memcached"
+
+  handlers:
+    - name: "Restart memcached"
+      service: name="memcached" state="restarted"

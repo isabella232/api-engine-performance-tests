@@ -1,0 +1,33 @@
+#
+# Example configuration that will enable Varnish API Engine on Varnish Cache
+# Plus v4.0.
+#
+
+vcl 4.0;
+import std;
+import sqlite3;
+import memcached;
+import digest;
+import directors;
+import kvstore;
+import var;
+
+sub vcl_recv {
+    if (req.url == "/varnish-ping") {
+        return(synth(200,"pong"));
+    }
+}
+
+include "/etc/api-engine/api-engine-v4.0.vcl";
+
+sub vcl_init {
+    #memcached.servers("{% for host in groups['accounting'] %}--SERVER={{ hostvars[host]['ansible_default_ipv4']['address'] }} {% endfor %}--BINARY-PROTOCOL");
+    memcached.servers("{% for host in groups['accounting'] %}{{ hostvars[host]['ansible_default_ipv4']['address'] }}, {% endfor %}");
+
+    # API Engine VCL must be included before these are set
+    #var.global_set("vae-accept-requests-without-apikey", "0");
+    #var.global_set("vae-accept-requests-on-sqlite-error", "1");
+    #var.global_set("vae-accept-requests-on-memcached-error", "1");
+    #var.global_set("vae-log-errors-to-syslog", "0");
+    #var.global_set("vae-kvstore-ttl", "5");
+}

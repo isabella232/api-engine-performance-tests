@@ -1,0 +1,47 @@
+#!/bin/bash
+
+export PATH=$PATH:/usr/local/bin
+
+echo "* Login"
+api-engine login || exit 1
+
+api-engine delete director --name "Test director"
+api-engine delete group --name "Test 1"
+api-engine delete group --name "Test 2"
+api-engine delete group --name "Test 3"
+api-engine delete group --name "Test 4"
+api-engine delete group --name "Test 5"
+api-engine delete group --name "Test 6"
+
+api-engine create director --name "Test director" --type round-robin
+
+{% for host in groups['backend'] %}
+api-engine create backend --name="Test backend {{ hostvars[host]['ansible_default_ipv4']['address'] }}" --host={{ hostvars[host]['ansible_default_ipv4']['address'] }} --port=1337 --director-name "Test director" || exit 1
+{% endfor %}
+
+api-engine create endpoint --name "Test endpoint" --director-name "Test director" --host "api.example.com" --url "/"
+
+echo "* Creating access groups."
+api-engine create group --name "Test 1" --description "Unthrottled access" || exit 1
+api-engine create group --name "Test 2" --description "Access with one rate limit" || exit 1
+api-engine create group --name "Test 3" --description "Access with two rate limits" || exit 1
+api-engine create group --name "Test 4" --description "Access with two rate limits and method filter" || exit 1
+api-engine create group --name "Test 5" --description "Throttled due to rate limit being exceeded" || exit 1
+api-engine create group --name "Test 6" --description "The consumer is not authenticated" || exit 1
+
+echo "* Configuring the access rules."
+api-engine create rule --endpoint-name "Test endpoint" --group-name "Test 1" --limit 0 --unique 0 --description "No rate limits" --name "Test 1" || exit 1
+api-engine create rule --endpoint-name "Test endpoint" --group-name "Test 2" --limit "900000r30" --unique 0 --description "One rate limit" --name "Test 2" || exit 1
+api-engine create rule --endpoint-name "Test endpoint" --group-name "Test 3" --limit "900000r30" --limit2 "900000r30" --unique 0 --description "Two rate limits" --name "Test 3" || exit 1
+api-engine create rule --endpoint-name "Test endpoint" --group-name "Test 4" --limit "900000r30" --limit2 "900000r30" --methods GET HEAD --unique 0 --description "Two rate limits and method filter" --name "Test 4" || exit 1
+api-engine create rule --endpoint-name "Test endpoint" --group-name "Test 5" --limit "1r900000" --unique 0 --description "Throttled" --name "Test 5" || exit 1
+
+echo "* Creating consumers."
+api-engine create consumer --name "Test 1" --group-name "Test 1" --description "key is t1" --key "t1" || exit 1
+api-engine create consumer --name "Test 2" --group-name "Test 2" --description "key is t2" --key "t2" || exit 1
+api-engine create consumer --name "Test 3" --group-name "Test 3" --description "key is t3" --key "t3" || exit 1
+api-engine create consumer --name "Test 4" --group-name "Test 4" --description "key is t4" --key "t4" || exit 1
+api-engine create consumer --name "Test 5" --group-name "Test 5" --description "key is t5" --key "t5" || exit 1
+api-engine create consumer --name "Test 6" --group-name "Test 6" --description "key is unknown" --key "unknown" || exit 1
+
+touch /tmp/api-engine-setup

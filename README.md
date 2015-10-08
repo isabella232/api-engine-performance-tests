@@ -1,1 +1,34 @@
-# api-engine-performance-tests
+# Varnish API Engine 2.0 performance test deployment
+
+This is the [Ansible](https://docs.ansible.com/ansible/) configuration used to prepare a Varnish API Engine 2.0 environment on CentOS 7 for performance tests.
+
+## Requirements
+
+Required pre configured repositories:
+
+* Varnish Plus 4
+* API Engine
+
+Required firewall openings:
+
+* Consumers -> Backends: ``1337/tcp``
+* Consumers -> Varnish: ``6081/tcp``
+* Management -> Statistics: ``6555/tcp``
+* Varnish -> Accounting: ``11211/tcp``
+* Varnish -> Backends: ``1337/tcp``
+* Varnish -> Management: ``8080/tcp``
+* Varnish -> Statistics: ``5558/tcp``
+
+## Setup
+
+#. Prepare 12 instances running CentOS 7.
+#. Add the required repositories manually (see Requirements).
+#. Ensure firewall openings are in place (see Requirements).
+#. Add the IP addresses of the instances to the Ansible ``inventory`` file.
+#. Deploy the configuration using ``run-ansible``.
+#. The test scripts are available in ``/usr/local/bin/`` on the consumer instances.
+
+## Considerations
+
+This configuration is not using TLS/SSL.
+

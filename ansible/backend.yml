@@ -1,0 +1,20 @@
+- name: "API origin"
+  hosts: "backend"
+  tasks:
+    # Sources available at https://github.com/espebra/dummy-api
+    - name: "Install binaries"
+      copy: src=files/{{ item }} dest=/usr/local/bin/{{ item }} owner=root group=root mode=755
+      with_items:
+        - "dummy-api"
+
+    - name: "Check if dummy-api is running"
+      register: running
+      command: lsof -i :1337
+      ignore_errors: true
+
+    - name: "Debug"
+      debug: msg="{{ running }}"
+
+    - name: "Start dummy-api"
+      when: running.rc == 1
+      shell: nohup /usr/local/bin/dummy-api -host 0.0.0.0 &

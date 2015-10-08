@@ -1,0 +1,22 @@
+- name: "API consumer"
+  hosts: "consumer"
+  tasks:
+    # Sources available at https://github.com/espebra/boom
+    - name: "Install binaries"
+      copy: src=files/{{ item }} dest=/usr/local/bin/{{ item }} owner=root group=root mode=755
+      with_items:
+        - "boom"
+
+    - name: "Prepare splay script"
+      template: src="templates/splay.j2" dest="/usr/local/bin/splay" mode=555
+
+    - name: "Prepare wrapper scripts for boom"
+      template: src="templates/tests/{{ item }}.j2" dest="/usr/local/bin/{{ item }}" mode=555
+      with_items:
+        - "api-engine-test-1"
+        - "api-engine-test-2"
+        - "api-engine-test-3"
+        - "api-engine-test-4"
+        - "api-engine-test-5"
+        - "api-engine-test-6"
+        - "reference-test"

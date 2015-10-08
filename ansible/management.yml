@@ -1,0 +1,36 @@
+- name: "API Engine management components"
+  hosts: "management"
+  tasks:
+    - name: "Install components"
+      yum: name="{{ item }}" state="installed"
+      with_items:
+        - "api-engine-rest"
+        - "api-engine-cli"
+        - "api-engine-ui"
+
+    - name: "Modify api-engine-rest-uwsgi.ini bind host"
+      replace: dest=/etc/api-engine/api-engine-rest-uwsgi.ini regexp='^http = 127.*' replace='http = 0.0.0.0:8080' backup=yes
+      notify:
+        - "Restart api-engine-rest"
+
+    - name: "Modify api-engine-rest.cfg VCS host"
+      replace: dest=/etc/api-engine/api-engine-rest.cfg regexp='^#VCS_HOST = .*' replace="VCS_HOST = '{{ hostvars[groups['statistics'][0]]['inventory_hostname'] }}'" backup=yes
+      notify:
+        - "Restart api-engine-rest"
+
+    - name: "Ensure services are running"
+      service: name="{{ item }}" state="running"
+      with_items:
+        - "api-engine-rest"
+
+    - name: "Prepare the API Engine configuration script"
+      template: src="templates/api-engine-setup.j2" dest="/usr/local/bin/api-engine-setup"
+          mode=555
+
+    - name: "Configure API Engine"
+      command: /usr/local/bin/api-engine-setup
+      args:
+        creates: /tmp/api-engine-setup
+  handlers:
+    - name: "Restart api-engine-rest"
+      service: name="api-engine-rest" state="restarted"

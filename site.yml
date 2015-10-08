@@ -1,0 +1,9 @@
+---
+- include: ansible/common.yml
+- include: ansible/management.yml
+- include: ansible/statistics.yml
+- include: ansible/accounting.yml
+- include: ansible/varnish.yml
+- include: ansible/backend.yml
+- include: ansible/consumer.yml
+

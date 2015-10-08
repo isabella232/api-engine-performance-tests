@@ -1,0 +1,53 @@
+- name: "API Engine Varnish instance"
+  hosts: "varnish"
+  tasks:
+    - name: "Install components"
+      yum: name="{{ item }}" state="installed"
+      with_items:
+        - "varnish-plus"
+        - "api-engine-sync"
+        - "api-engine-vmods-vcp4"
+        - "varnish-custom-statistics-probe"
+
+    - name: "Configure VCS probe"
+      template: src="templates/vstatdprobe.params.j2" dest="/etc/varnish/vstatdprobe.params"
+          mode=444
+      notify:
+        - "Restart vstatdprobe"
+
+    - name: "Configure Varnish"
+      template: src="templates/default.vcl.j2" dest="/etc/varnish/default.vcl"
+          mode=444
+      notify:
+        - "Restart varnish"
+
+    - name: "Modify api-engine-sync.cfg username"
+      replace: dest=/etc/api-engine/api-engine-sync.cfg regexp='^#username = changeme$' replace='username = sync' backup=yes
+      notify:
+        - "Restart api-engine-sync"
+
+    - name: "Modify api-engine-sync.cfg password"
+      replace: dest=/etc/api-engine/api-engine-sync.cfg regexp='^#password = changeme$' replace='password = SyncPass' backup=yes
+      notify:
+        - "Restart api-engine-sync"
+
+    - name: "Modify api-engine-sync.cfg api"
+      replace: dest=/etc/api-engine/api-engine-sync.cfg regexp='^#api = .*' replace="api = http://{{ hostvars[groups['management'][0]]['inventory_hostname'] }}:8080/api/v1" backup=yes
+      notify:
+        - "Restart api-engine-sync"
+
+    - name: "Ensure services are running"
+      service: name="{{ item }}" state="running"
+      with_items:
+        - "api-engine-sync"
+        - "varnish"
+
+  handlers:
+    - name: "Restart api-engine-sync"
+      service: name="api-engine-sync" state="restarted"
+
+    - name: "Restart varnish"
+      service: name="varnish" state="restarted"
+
+    - name: "Restart vstatdprobe"
+      service: name="vstatdprobe" state="restarted"

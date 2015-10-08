@@ -1,0 +1,69 @@
+This is {{ inventory_hostname }} / {{ ansible_fqdn }}
+
+API Engine benchmarking environment 
+
+Management:
+{% if 'management' in groups %}
+{% for host in groups['management'] %}
+{% if hostvars[host]['inventory_hostname'] == inventory_hostname %}
+  * {{ host }} / {{ hostvars[host]['ansible_fqdn'] }} <- This host
+{% else %}
+  * {{ host }} / {{ hostvars[host]['ansible_fqdn'] }}
+{% endif %}
+{% endfor %}
+{% endif %}
+
+Accounting:
+{% if 'accounting' in groups %}
+{% for host in groups['accounting'] %}
+{% if hostvars[host]['inventory_hostname'] == inventory_hostname %}
+  * {{ host }} / {{ hostvars[host]['ansible_fqdn'] }} <- This host
+{% else %}
+  * {{ host }} / {{ hostvars[host]['ansible_fqdn'] }}
+{% endif %}
+{% endfor %}
+{% endif %}
+
+Statistics:
+{% if 'statistics' in groups %}
+{% for host in groups['statistics'] %}
+{% if hostvars[host]['inventory_hostname'] == inventory_hostname %}
+  * {{ host }} / {{ hostvars[host]['ansible_fqdn'] }} <- This host
+{% else %}
+  * {{ host }} / {{ hostvars[host]['ansible_fqdn'] }}
+{% endif %}
+{% endfor %}
+{% endif %}
+
+Backends:
+{% if 'backend' in groups %}
+{% for host in groups['backend'] %}
+{% if hostvars[host]['inventory_hostname'] == inventory_hostname %}
+  * {{ host }} / {{ hostvars[host]['ansible_fqdn'] }} <- This host
+{% else %}
+  * {{ host }} / {{ hostvars[host]['ansible_fqdn'] }}
+{% endif %}
+{% endfor %}
+{% endif %}
+
+Varnish instances:
+{% if 'varnish' in groups %}
+{% for host in groups['varnish'] %}
+{% if hostvars[host]['inventory_hostname'] == inventory_hostname %}
+  * {{ host }} / {{ hostvars[host]['ansible_fqdn'] }} <- This host
+{% else %}
+  * {{ host }} / {{ hostvars[host]['ansible_fqdn'] }}
+{% endif %}
+{% endfor %}
+{% endif %}
+
+Consumer:
+{% if 'consumer' in groups %}
+{% for host in groups['consumer'] %}
+{% if hostvars[host]['inventory_hostname'] == inventory_hostname %}
+  * {{ host }} / {{ hostvars[host]['ansible_fqdn'] }} <- This host
+{% else %}
+  * {{ host }} / {{ hostvars[host]['ansible_fqdn'] }}
+{% endif %}
+{% endfor %}
+{% endif %}

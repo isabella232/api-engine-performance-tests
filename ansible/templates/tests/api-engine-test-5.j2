@@ -1,0 +1,10 @@
+#!/bin/bash
+
+HOST="{{ target_host }}"
+ADDR="localhost"
+{% for host in groups['varnish'] %}
+#ADDR={{ hostvars[host]['ansible_default_ipv4']['address'] }}
+{% endfor %}
+
+splay
+boom -H "${HOST}" -n 100000 -c 100 "http://${ADDR}:6081/test/?max-age=0&apikey=t5"

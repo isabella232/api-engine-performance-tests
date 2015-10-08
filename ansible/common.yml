@@ -1,0 +1,53 @@
+---
+- name: "Common configuration"
+  hosts: "all"
+  tasks:
+    - name: "Dump all vars"
+      template: src="templates/dumpall.j2" dest="/tmp/ansible.all" mode="444"
+
+    - name: "Disable selinux"
+      selinux: state="disabled"
+      notify:
+        - "Restart server"
+        - "Wait for server to restart"
+
+    - name: "Install packages"
+      yum: name={{ item }} state=latest
+      with_items:
+        - "lsof"
+        - "net-tools"
+
+    - name: "Ensure repository configuration is present"
+      copy: src="files/{{ item }}" dest="/etc/yum.repos.d/{{ item }}" mode="444"
+      with_items:
+        - "epel.repo"
+    
+    - name: "Ensure profile is configured"
+      copy: src="files/profile.sh" dest="/etc/profile.d/profile.sh" mode="444"
+    
+    - name: "Ensure MOTD is present"
+      template: src="templates/motd.j2" dest="/etc/motd"
+          mode=444
+
+    - name: "Set kernel parameters"
+      command: "sysctl {{ item }}"
+      ignore_errors: yes
+      with_items:
+        - "net.nf_conntrack_max=100000"
+
+  handlers:
+    - name: "Restart server"
+      command: shutdown -r now "Reboot triggered by Ansible"
+      async: 1
+      poll: 0
+      ignore_errors: true
+
+    - name: "Wait for server to restart"
+      local_action:
+        module: wait_for
+          host={{ inventory_hostname }}
+          port=22
+          delay=1
+          timeout=300
+        sudo: false
+

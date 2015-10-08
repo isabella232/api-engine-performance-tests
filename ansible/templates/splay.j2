@@ -1,0 +1,16 @@
+#!/bin/bash
+{% if splay is defined %}
+seconds={{ splay }}
+{% else %}
+seconds=0
+{% endif %}
+if [ $seconds -gt 0 ]; then
+     sleep_seconds=$(( ${seconds} - $(date +%s) % ${seconds} ))
+     echo -n "Sleeping..."
+     while [ $sleep_seconds -gt 0 ]; do
+         echo -n " ${sleep_seconds}"
+         sleep 1
+         sleep_seconds=$(($sleep_seconds-1))
+     done
+     echo
+fi
