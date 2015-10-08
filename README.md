@@ -28,7 +28,11 @@ Required firewall openings:
 5. Deploy the configuration using ``run-ansible``.
 6. The test scripts are available in ``/usr/local/bin/`` on the consumer instances.
 
+## Sources
+
+* Boom is pre-built with a couple of patches to get support for keep-alive and custom host header. The sources are available at https://github.com/espebra/boom/.
+* Dummy-api is pre-built. The sources are available at https://github.com/espebra/dummy-api/.
+
 ## Considerations
 
 This configuration is not using TLS/SSL.
-
